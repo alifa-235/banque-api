@@ -1,0 +1,1 @@
+curl.exe -X POST http://localhost:3000/api/accounts -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJ0ZXN0LXVzZXIiLCJyb2xlIjoiY2xpZW50IiwiaWF0IjoxNzc2MTA0MzI2LCJleHAiOjE3NzYxOTA3MjZ9.IlN_rrX3p6ZtIJLZBk50QWQlVRULDVTsvRlEyEmiN30" -H "Content-Type: application/json" -d "@data.json"
