@@ -42,7 +42,7 @@ const isClient = (req, res, next) => {
   next();
 };
 
-// Générer un token (pour les tests)
+// Générer un token
 const generateToken = (userId, role) => {
   return jwt.sign({ id: userId, role }, JWT_SECRET, { expiresIn: '24h' });
 };
