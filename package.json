@@ -1,9 +1,11 @@
 {
   "name": "banque-api",
   "version": "1.0.0",
+  "description": "API bancaire avec authentification JWT",
   "main": "src/index.js",
   "scripts": {
-    "start": "node src/index.js"
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -13,5 +15,8 @@
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^7.0.0",
     "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
   }
 }
