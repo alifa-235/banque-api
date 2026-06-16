@@ -1,18 +1,9 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 // src/routes/accountRoutes.ts
-import { Router } from 'express';
-import {
-  createAccount,
-  getAllAccounts,
-  getAccountById,
-  deposit,
-  withdraw,
-  transfer,
-  getTransactionHistory,
-  deactivateAccount
-} from '../controllers/accountController';
-
-const router = Router();
-
+const express_1 = require("express");
+const accountController_1 = require("../controllers/accountController");
+const router = (0, express_1.Router)();
 /**
  * @swagger
  * /api/accounts:
@@ -64,8 +55,7 @@ const router = Router();
  *       400:
  *         description: Données invalides ou email déjà existant
  */
-router.post('/accounts', createAccount);
-
+router.post('/accounts', accountController_1.createAccount);
 /**
  * @swagger
  * /api/accounts:
@@ -115,8 +105,7 @@ router.post('/accounts', createAccount);
  *                 pagination:
  *                   type: object
  */
-router.get('/accounts', getAllAccounts);
-
+router.get('/accounts', accountController_1.getAllAccounts);
 /**
  * @swagger
  * /api/accounts/{id}:
@@ -146,8 +135,7 @@ router.get('/accounts', getAllAccounts);
  *       404:
  *         description: Compte non trouvé
  */
-router.get('/accounts/:id', getAccountById);
-
+router.get('/accounts/:id', accountController_1.getAccountById);
 /**
  * @swagger
  * /api/deposit:
@@ -182,8 +170,7 @@ router.get('/accounts/:id', getAccountById);
  *       404:
  *         description: Compte non trouvé
  */
-router.post('/deposit', deposit);
-
+router.post('/deposit', accountController_1.deposit);
 /**
  * @swagger
  * /api/withdraw:
@@ -216,8 +203,7 @@ router.post('/deposit', deposit);
  *       404:
  *         description: Compte non trouvé
  */
-router.post('/withdraw', withdraw);
-
+router.post('/withdraw', accountController_1.withdraw);
 /**
  * @swagger
  * /api/transfer:
@@ -253,8 +239,7 @@ router.post('/withdraw', withdraw);
  *       404:
  *         description: Compte non trouvé
  */
-router.post('/transfer', transfer);
-
+router.post('/transfer', accountController_1.transfer);
 /**
  * @swagger
  * /api/accounts/{accountId}/history:
@@ -287,8 +272,7 @@ router.post('/transfer', transfer);
  *       404:
  *         description: Compte non trouvé
  */
-router.get('/accounts/:accountId/history', getTransactionHistory);
-
+router.get('/accounts/:accountId/history', accountController_1.getTransactionHistory);
 /**
  * @swagger
  * /api/accounts/{id}:
@@ -310,6 +294,5 @@ router.get('/accounts/:accountId/history', getTransactionHistory);
  *       404:
  *         description: Compte non trouvé
  */
-router.delete('/accounts/:id', deactivateAccount);
-
-export default router;
+router.delete('/accounts/:id', accountController_1.deactivateAccount);
+exports.default = router;
