@@ -443,18 +443,52 @@ const deactivateAccount = async (req, res) => {
   }
 };
 
-// Ajouter à l'export
+// src/controllers/accountController.js
+
+// Rechercher un compte par email (public)
+const findAccountByEmail = async (req, res) => {
+  try {
+    const { email } = req.query;
+    
+    if (!email) {
+      return res.status(400).json({ error: 'Email requis' });
+    }
+
+    const account = await Account.findOne({ clientEmail: email })
+      .select('clientName clientEmail accountNumber status');
+
+    if (!account) {
+      return res.status(404).json({ error: 'Compte non trouvé' });
+    }
+
+    res.json({
+      success: true,
+      data: {
+        id: account._id,
+        clientName: account.clientName,
+        clientEmail: account.clientEmail,
+        accountNumber: account.accountNumber,
+        status: account.status
+      }
+    });
+  } catch (error) {
+    console.error('Erreur recherche:', error);
+    res.status(500).json({ error: 'Erreur lors de la recherche du compte' });
+  }
+};
+
+// Export
 module.exports = {
   createAccount,
   getAllAccounts,
   getAccountById,
   updateAccount,
   deleteAccount,
-  deactivateAccount,  // ← Ajouter cette ligne
   deposit,
   withdraw,
   transfer,
   getTransactionHistory,
   getMyAccount,
-  getMyTransactions
+  getMyTransactions,
+  findAccountByEmail  // ← AJOUTER
 };

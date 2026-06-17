@@ -7,13 +7,14 @@ const {
   getAllAccounts,
   getAccountById,
   updateAccount,
-  deleteAccount,  // ← Ajoutez cette ligne
+  deleteAccount,
   deposit,
   withdraw,
   transfer,
   getTransactionHistory,
   getMyAccount,
-  getMyTransactions
+  getMyTransactions,
+  findAccountByEmail  // ← AJOUTER
 } = require('../controllers/accountController');
 
 const { register, login, verifyToken } = require('../controllers/authController');
@@ -48,4 +49,40 @@ router.post('/client/deposit', authenticate, isClient, deposit);
 router.post('/client/withdraw', authenticate, isClient, withdraw);
 router.post('/client/transfer', authenticate, isClient, transfer);
 
+
+// ==========================
+// ROUTE PUBLIQUE - Rechercher un compte par email
+// ==========================
+const findAccountByEmail = async (req, res) => {
+  try {
+    const { email } = req.query;
+    if (!email) {
+      return res.status(400).json({ error: 'Email requis' });
+    }
+
+    const account = await Account.findOne({ clientEmail: email })
+      .select('clientName clientEmail accountNumber id status');
+    
+    if (!account) {
+      return res.status(404).json({ error: 'Compte non trouvé' });
+    }
+
+    res.json({
+      success: true,
+      data: {
+        id: account._id,
+        clientName: account.clientName,
+        clientEmail: account.clientEmail,
+        accountNumber: account.accountNumber,
+        status: account.status
+      }
+    });
+  } catch (error) {
+    console.error('Erreur recherche:', error);
+    res.status(500).json({ error: 'Erreur lors de la recherche' });
+  }
+};
+
+// Ajouter la route (publique)
+router.get('/find-account', findAccountByEmail);
 module.exports = router;
