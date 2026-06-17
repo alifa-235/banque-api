@@ -14,7 +14,7 @@ const {
   getTransactionHistory,
   getMyAccount,
   getMyTransactions,
-  findAccountByEmail  // ← AJOUTER
+  //findAccountByEmail  // ← AJOUTER
 } = require('../controllers/accountController');
 
 const { register, login, verifyToken } = require('../controllers/authController');
