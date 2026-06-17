@@ -17,7 +17,7 @@ const seedDatabase = async () => {
     await Transaction.deleteMany({});
     console.log('🗑️ Anciennes données supprimées');
 
-    const hashedPassword = '$2a$10$3b0VjQqjKj5mVqZqZqZqZu';
+    const hashedPassword = await bcrypt.hash('admin123', 10);
 
     // Créer les comptes (le hook générera automatiquement les numéros)
     const accounts = await Account.create([
@@ -38,16 +38,6 @@ const seedDatabase = async () => {
         type: 'epargne',
         role: 'client',
         balance: 5000000,
-        currency: 'XAF',
-        status: 'active'
-      },
-      {
-        clientName: 'Admin System',
-        clientEmail: 'admin@demo.com',
-        password: hashedPassword,
-        type: 'courant',
-        role: 'admin',
-        balance: 0,
         currency: 'XAF',
         status: 'active'
       }
@@ -81,7 +71,7 @@ const seedDatabase = async () => {
     console.log('\n🔐 Identifiants de test :');
     console.log('📧 Client: jean@demo.com / password123');
     console.log('📧 Client: marie@demo.com / password123');
-    console.log('🔑 Admin: admin@demo.com / password123');
+    //console.log('🔑 Admin: admin@demo.com / password123');
 
     await mongoose.disconnect();
     console.log('\n👋 Déconnecté de MongoDB');
