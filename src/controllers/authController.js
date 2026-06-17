@@ -5,13 +5,12 @@ const Account = require('../models/Account');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_key_123';
 
-// Inscription
-// src/controllers/authController.js
-
-// Inscription (MODIFIÉE - Seuls les clients peuvent s'inscrire)
+// ==========================
+// INSCRIPTION (créé un client)
+// ==========================
 const register = async (req, res) => {
   try {
-    const { clientName, clientEmail, password, type = 'courant' } = req.body; // Supprimer 'role'
+    const { clientName, clientEmail, password, type = 'courant' } = req.body;
 
     if (!clientName || !clientEmail || !password) {
       return res.status(400).json({ error: 'Tous les champs sont requis' });
@@ -28,13 +27,13 @@ const register = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // ✅ FORCER le rôle 'client' pour toutes les inscriptions publiques
+    // ✅ FORCER le rôle 'client' pour toutes les inscriptions
     const account = new Account({
       clientName,
       clientEmail,
       password: hashedPassword,
       type,
-      role: 'client',  // ← Toujours 'client'
+      role: 'client',
       balance: 0,
       currency: 'XAF',
       status: 'active'
@@ -57,7 +56,7 @@ const register = async (req, res) => {
           id: account._id,
           name: account.clientName,
           email: account.clientEmail,
-          role: account.role,  // Sera toujours 'client'
+          role: account.role,
           accountNumber: account.accountNumber
         }
       }
@@ -68,7 +67,63 @@ const register = async (req, res) => {
   }
 };
 
-// Vérifier le token
+// ==========================
+// CONNEXION (AJOUTÉE)
+// ==========================
+const login = async (req, res) => {
+  try {
+    const { clientEmail, password } = req.body;
+
+    if (!clientEmail || !password) {
+      return res.status(400).json({ error: 'Email et mot de passe requis' });
+    }
+
+    const account = await Account.findOne({ clientEmail });
+    if (!account) {
+      return res.status(401).json({ error: 'Email ou mot de passe incorrect' });
+    }
+
+    const isValidPassword = await bcrypt.compare(password, account.password);
+    if (!isValidPassword) {
+      return res.status(401).json({ error: 'Email ou mot de passe incorrect' });
+    }
+
+    if (account.status === 'blocked') {
+      return res.status(403).json({ error: 'Compte bloqué. Contactez l\'administrateur.' });
+    }
+
+    const token = jwt.sign(
+      { id: account._id, email: account.clientEmail, role: account.role },
+      JWT_SECRET,
+      { expiresIn: '24h' }
+    );
+
+    res.json({
+      success: true,
+      message: 'Connexion réussie',
+      data: {
+        token,
+        user: {
+          id: account._id,
+          name: account.clientName,
+          email: account.clientEmail,
+          role: account.role,
+          accountNumber: account.accountNumber,
+          balance: account.balance,
+          type: account.type,
+          status: account.status
+        }
+      }
+    });
+  } catch (error) {
+    console.error('Erreur connexion:', error);
+    res.status(500).json({ error: 'Erreur lors de la connexion' });
+  }
+};
+
+// ==========================
+// VÉRIFICATION TOKEN
+// ==========================
 const verifyToken = async (req, res) => {
   try {
     const token = req.headers.authorization?.split(' ')[1];
@@ -103,4 +158,7 @@ const verifyToken = async (req, res) => {
   }
 };
 
+// ==========================
+// EXPORT
+// ==========================
 module.exports = { register, login, verifyToken };
