@@ -6,9 +6,12 @@ const Account = require('../models/Account');
 const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_key_123';
 
 // Inscription
+// src/controllers/authController.js
+
+// Inscription (MODIFIÉE - Seuls les clients peuvent s'inscrire)
 const register = async (req, res) => {
   try {
-    const { clientName, clientEmail, password, type = 'courant', role = 'client' } = req.body;
+    const { clientName, clientEmail, password, type = 'courant' } = req.body; // Supprimer 'role'
 
     if (!clientName || !clientEmail || !password) {
       return res.status(400).json({ error: 'Tous les champs sont requis' });
@@ -25,12 +28,13 @@ const register = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // ✅ FORCER le rôle 'client' pour toutes les inscriptions publiques
     const account = new Account({
       clientName,
       clientEmail,
       password: hashedPassword,
       type,
-      role: role || 'client',
+      role: 'client',  // ← Toujours 'client'
       balance: 0,
       currency: 'XAF',
       status: 'active'
@@ -46,14 +50,14 @@ const register = async (req, res) => {
 
     res.status(201).json({
       success: true,
-      message: 'Compte créé avec succès',
+      message: 'Compte client créé avec succès',
       data: {
         token,
         user: {
           id: account._id,
           name: account.clientName,
           email: account.clientEmail,
-          role: account.role,
+          role: account.role,  // Sera toujours 'client'
           accountNumber: account.accountNumber
         }
       }
@@ -61,58 +65,6 @@ const register = async (req, res) => {
   } catch (error) {
     console.error('Erreur inscription:', error);
     res.status(500).json({ error: 'Erreur lors de l\'inscription' });
-  }
-};
-
-// Connexion
-const login = async (req, res) => {
-  try {
-    const { clientEmail, password } = req.body;
-
-    if (!clientEmail || !password) {
-      return res.status(400).json({ error: 'Email et mot de passe requis' });
-    }
-
-    const account = await Account.findOne({ clientEmail });
-    if (!account) {
-      return res.status(401).json({ error: 'Email ou mot de passe incorrect' });
-    }
-
-    const isValidPassword = await bcrypt.compare(password, account.password);
-    if (!isValidPassword) {
-      return res.status(401).json({ error: 'Email ou mot de passe incorrect' });
-    }
-
-    if (account.status === 'blocked') {
-      return res.status(403).json({ error: 'Compte bloqué. Contactez l\'administrateur.' });
-    }
-
-    const token = jwt.sign(
-      { id: account._id, email: account.clientEmail, role: account.role },
-      JWT_SECRET,
-      { expiresIn: '24h' }
-    );
-
-    res.json({
-      success: true,
-      message: 'Connexion réussie',
-      data: {
-        token,
-        user: {
-          id: account._id,
-          name: account.clientName,
-          email: account.clientEmail,
-          role: account.role,
-          accountNumber: account.accountNumber,
-          balance: account.balance,
-          type: account.type,
-          status: account.status
-        }
-      }
-    });
-  } catch (error) {
-    console.error('Erreur connexion:', error);
-    res.status(500).json({ error: 'Erreur lors de la connexion' });
   }
 };
 
