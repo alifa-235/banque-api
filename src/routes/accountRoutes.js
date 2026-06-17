@@ -1,6 +1,7 @@
 // src/routes/accountRoutes.js
 const express = require('express');
 const router = express.Router();
+const Account = require('../models/Account');  // ← AJOUTER CETTE LIGNE
 
 const {
   createAccount,
@@ -14,7 +15,6 @@ const {
   getTransactionHistory,
   getMyAccount,
   getMyTransactions,
-  //findAccountByEmail  // ← AJOUTER
 } = require('../controllers/accountController');
 
 const { register, login, verifyToken } = require('../controllers/authController');
@@ -34,7 +34,7 @@ router.post('/admin/accounts', authenticate, isAdmin, createAccount);
 router.get('/admin/accounts', authenticate, isAdmin, getAllAccounts);
 router.get('/admin/accounts/:id', authenticate, isAdmin, getAccountById);
 router.put('/admin/accounts/:id', authenticate, isAdmin, updateAccount);
-router.delete('/admin/accounts/:id', authenticate, isAdmin, deleteAccount); // ← Utilise deleteAccount
+router.delete('/admin/accounts/:id', authenticate, isAdmin, deleteAccount);
 router.post('/admin/deposit', authenticate, isAdmin, deposit);
 router.post('/admin/withdraw', authenticate, isAdmin, withdraw);
 router.post('/admin/transfer', authenticate, isAdmin, transfer);
@@ -49,7 +49,6 @@ router.post('/client/deposit', authenticate, isClient, deposit);
 router.post('/client/withdraw', authenticate, isClient, withdraw);
 router.post('/client/transfer', authenticate, isClient, transfer);
 
-
 // ==========================
 // ROUTE PUBLIQUE - Rechercher un compte par email
 // ==========================
@@ -60,9 +59,11 @@ const findAccountByEmail = async (req, res) => {
       return res.status(400).json({ error: 'Email requis' });
     }
 
-    const account = await Account.findOne({ clientEmail: email })
-      .select('clientName clientEmail accountNumber id status');
-    
+    // ✅ RECHERCHE INSENSIBLE À LA CASSE
+    const account = await Account.findOne({ 
+      clientEmail: { $regex: new RegExp(`^${email.trim()}$`, 'i') } 
+    }).select('clientName clientEmail accountNumber status');
+
     if (!account) {
       return res.status(404).json({ error: 'Compte non trouvé' });
     }
@@ -83,6 +84,6 @@ const findAccountByEmail = async (req, res) => {
   }
 };
 
-// Ajouter la route (publique)
 router.get('/find-account', findAccountByEmail);
+
 module.exports = router;
