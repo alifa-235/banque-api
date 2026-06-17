@@ -6,7 +6,8 @@
   "scripts": {
     "build": "echo 'Build skipped - JavaScript project'",
     "start": "node src/index.js",
-    "dev": "nodemon src/index.js"
+    "dev": "nodemon src/index.js",
+    "seed": "node scripts/seed-mongo.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -14,6 +15,7 @@
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.0",
+    "mongodb": "^7.3.0",
     "mongoose": "^7.0.0",
     "morgan": "^1.10.0"
   },

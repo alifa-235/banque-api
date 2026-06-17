@@ -412,12 +412,45 @@ const getMyTransactions = async (req, res) => {
   }
 };
 
+// src/controllers/accountController.js (ajouter cette fonction)
+
+// Désactiver un compte (Admin)
+const deactivateAccount = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const account = await Account.findById(id);
+    if (!account) {
+      return res.status(404).json({ error: 'Compte non trouvé' });
+    }
+
+    if (account.balance > 0) {
+      return res.status(400).json({ error: 'Impossible de désactiver un compte avec un solde positif' });
+    }
+
+    account.status = 'inactive';
+    account.updatedAt = new Date();
+    await account.save();
+
+    res.json({
+      success: true,
+      message: 'Compte désactivé avec succès',
+      data: account
+    });
+  } catch (error) {
+    console.error('Erreur désactivation:', error);
+    res.status(500).json({ error: 'Erreur lors de la désactivation du compte' });
+  }
+};
+
+// Ajouter à l'export
 module.exports = {
   createAccount,
   getAllAccounts,
   getAccountById,
   updateAccount,
   deleteAccount,
+  deactivateAccount,  // ← Ajouter cette ligne
   deposit,
   withdraw,
   transfer,

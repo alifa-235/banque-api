@@ -3,11 +3,18 @@ const mongoose = require('mongoose');
 
 const connectDB = async () => {
   try {
-    const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/banque_db';
+    // Elle cherchera automatiquement la variable MONGODB_URI configurée sur Render
+    const mongoURI = process.env.MONGODB_URI;
+    
+    if (!mongoURI) {
+        console.error("❌ La variable d'environnement MONGODB_URI n'est pas définie.");
+        process.exit(1);
+    }
+
     await mongoose.connect(mongoURI);
-    console.log('✅ MongoDB connecté avec succès');
+    console.log('✅ MongoDB Atlas connecté avec succès');
   } catch (error) {
-    console.error('❌ Erreur de connexion MongoDB:', error.message);
+    console.error('❌ Erreur de connexion à MongoDB Atlas:', error.message);
     process.exit(1);
   }
 };

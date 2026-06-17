@@ -5,7 +5,7 @@ const AccountSchema = new mongoose.Schema(
   {
     accountNumber: {
       type: String,
-      required: true,
+      required: false,  // ← MIS À false TEMPORAIREMENT pour que le seed fonctionne
       unique: true,
       trim: true
     },
@@ -59,7 +59,7 @@ const AccountSchema = new mongoose.Schema(
   }
 );
 
-// Générer un numéro de compte unique avant la sauvegarde
+// Hook pour générer automatiquement le numéro de compte
 AccountSchema.pre('save', async function(next) {
   if (!this.accountNumber) {
     const generateAccountNumber = () => {
