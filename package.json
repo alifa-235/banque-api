@@ -7,7 +7,13 @@
     "build": "echo 'Build skipped - JavaScript project'",
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
-    "seed": "node scripts/seed-mongo.js"
+    "seed": "node scripts/seed-mongo.js",
+    "test": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:unit": "vitest run src/tests/unit",
+    "test:integration": "vitest run src/tests/integration",
+    "test:watch": "vitest watch",
+    "test:ui": "vitest --ui"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -19,10 +25,14 @@
     "mongoose": "^7.0.0",
     "morgan": "^1.10.0"
   },
-  "devDependencies": {
-    "nodemon": "^2.0.22"
-  },
   "engines": {
     "node": ">=18.0.0"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^1.6.1",
+    "mongodb-memory-server": "^9.5.0",
+    "nodemon": "^2.0.22",
+    "supertest": "^6.3.4",
+    "vitest": "^1.6.1"
   }
 }
